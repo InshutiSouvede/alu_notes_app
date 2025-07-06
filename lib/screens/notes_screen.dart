@@ -73,7 +73,7 @@ Widget build(BuildContext context) {
             itemBuilder: (context, i) => NoteCard(
               note: notes[i],
               onEdit: () => _showNoteDialog(note: notes[i]),
-              onDelete: () => provider.deleteNote(context, notes[i].id),
+              onDelete: () => _showDeleteConfirmationDialog(notes[i]),
             ),
           );
         },
@@ -125,4 +125,35 @@ Widget build(BuildContext context) {
           ),
     );
   }
+
+  void _showDeleteConfirmationDialog(Note note) {
+  showDialog(
+    context: context,
+    builder: (context) => AlertDialog(
+      title: const Text('Delete Note'),
+      content: const Text('Are you sure you want to delete this note? This action cannot be undone.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            final provider = Provider.of<NotesProvider>(
+              context,
+              listen: false,
+            );
+            provider.deleteNote(context, note.id);
+            Navigator.pop(context);
+          },
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.red,
+            foregroundColor: Colors.white,
+          ),
+          child: const Text('Delete'),
+        ),
+      ],
+    ),
+  );
+}
 }
